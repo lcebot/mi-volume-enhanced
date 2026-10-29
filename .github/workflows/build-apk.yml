@@ -1,0 +1,201 @@
+# Builds the LSPosed module APK.
+#
+# Secrets (Settings > Secrets and variables > Actions), signing only:
+#   KEYSTORE_B64       - base64 of your personal keystore (see below)
+#   KEYSTORE_PASSWORD  - store password
+#   KEY_ALIAS          - optional, defaults to the store's only alias
+#   KEY_PASSWORD       - optional, defaults to KEYSTORE_PASSWORD (PKCS12 has one password)
+#
+# Make the keystore once, keep it offline, never commit it. No JDK needed: PowerShell writes a
+# PKCS12 directly, then base64 it into KEYSTORE_B64:
+#   [Convert]::ToBase64String([IO.File]::ReadAllBytes("mivolumeenhanced.p12")) | Set-Clipboard
+# Not certutil -encode (it wraps the output in BEGIN/END lines) and not > / Out-File (PowerShell 5
+# writes UTF-16 with a BOM); paste straight from the clipboard into the secret.
+# Losing this file means no device can ever overwrite-install the module again.
+#
+# Output: workflow artifact "mi-volume-enhanced" (app-release.apk). Publishing a release on GitHub
+# runs the same build and attaches the APK to that release. Create the release with no files of
+# your own and wait for the run to finish.
+# Without the keystore secrets the build still succeeds, but produces app-release-unsigned.apk,
+# which cannot be installed.
+name: build-apk
+on:
+  # Branch pushes: a CI build, artifact only. The paths filter keeps it off doc-only commits.
+  push:
+    branches: ["**"]
+    paths: ["app/**", "gradle/**", "*.gradle.kts", "gradle.properties", ".github/workflows/build-apk.yml"]
+  # Publishing a release is what attaches the APK. This is the event to listen for, not a tag push:
+  # a release created in the web UI makes its tag through the API, and a "push" with both a tags
+  # and a paths filter is unreliable anyway: a tag pointing at an already-pushed commit has no
+  # changed files for the paths filter to match, so the run is skipped.
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write          # deleting superseded artifacts, see the last step
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # tags, so a branch build can name itself after the latest one
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      # ubuntu-latest ships the Android SDK at $ANDROID_HOME with licenses accepted. The platform
+      # must match compileSdk in app/build.gradle.kts: since API 36.1 platform packages carry a minor
+      # version, and compileSdk 37.1 maps to android-37.1. android-actions/setup-android@v3 is not used
+      # because it tries to install the 'tools' package, which current images do not have.
+      - name: install SDK components
+        run: |
+          SDKMANAGER=$(ls -d "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager | tail -n1)
+          yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+          "$SDKMANAGER" "platforms;android-37.1" "build-tools;36.0.0" >/dev/null
+
+      # The repository carries no wrapper scripts or wrapper jar, only gradle-wrapper.properties
+      # for IDEs; CI installs Gradle directly.
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "9.8.2"          # the same as gradle-wrapper.properties
+
+      # Decoded into RUNNER_TEMP, never into the workspace: nothing here can end up in an artifact.
+      - name: decode keystore
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ]; then
+            echo "no keystore secret: the release APK will be unsigned"
+            exit 0
+          fi
+
+          # Keep only base64 alphabet characters. GNU base64 rejects the entire input over a single
+          # stray byte ("invalid input"), and a secret pasted from Windows routinely carries a CR,
+          # a BOM, or certutil's BEGIN/END armour. Dropping the rest is safe: what survives is
+          # still verified below, so a genuinely wrong secret cannot slip through.
+          clean=$(printf '%s' "$KEYSTORE_B64" | tr -cd 'A-Za-z0-9+/=')
+          printf '%s' "$clean" | base64 -d > "$RUNNER_TEMP/mivolumeenhanced.p12" 2>/dev/null || true
+
+          # A PKCS12 is a DER SEQUENCE, so the file starts with 30 82, and its base64 with "MII".
+          if ! head -c2 "$RUNNER_TEMP/mivolumeenhanced.p12" | od -An -tx1 | grep -q '30 82'; then
+            echo "KEYSTORE_B64 does not decode to a PKCS12. Diagnostics (no secret content):"
+            echo "  characters received:       ${#KEYSTORE_B64}"
+            echo "  left after filtering:      ${#clean}"
+            echo "  starts with MII:           $(case "$clean" in MII*) echo yes;; *) echo no;; esac)"
+            echo "  length is a multiple of 4: $(( ${#clean} % 4 == 0 ))"
+            echo "  decoded bytes:             $(wc -c < "$RUNNER_TEMP/mivolumeenhanced.p12")"
+            echo
+            echo "Expected: a few thousand characters, starting with MII."
+            echo 'Re-copy with: [Convert]::ToBase64String([IO.File]::ReadAllBytes("mivolumeenhanced.p12")) | Set-Clipboard'
+            echo "and paste straight into the secret, with no file and no certutil."
+            exit 1
+          fi
+
+          echo "KEYSTORE_FILE=$RUNNER_TEMP/mivolumeenhanced.p12" >> "$GITHUB_ENV"
+          echo "signing with the keystore secret ($(wc -c < "$RUNNER_TEMP/mivolumeenhanced.p12") bytes)"
+
+      # Tags are the single source of truth for versions. A release builds its own tag; anything
+      # else is a CI build and borrows the newest tag plus the short commit (1.0.3+a1b2c3d), so a CI
+      # APK says which release it sits after and which commit it actually is.
+      #
+      # The format is fixed at vA.B.C, where A and B are one digit and C may be two, which is
+      # exactly what versionCode = A*1000 + B*100 + C can represent without two tags ever colliding.
+      # A release on a malformed tag is an error; a branch build just falls back, because CI must
+      # not break over the state of some old tag.
+      - name: derive the version
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "release" ]; then
+            tag="$GITHUB_REF_NAME"
+          else
+            tag=$(git describe --tags --abbrev=0 2>/dev/null || true)
+            if [ -z "$tag" ]; then
+              echo "no tag in this repository yet: using the fallback in app/build.gradle.kts"
+              exit 0
+            fi
+          fi
+
+          if ! printf '%s' "$tag" | grep -qE '^v[0-9]\.[0-9]\.[0-9]{1,2}$'; then
+            if [ "$GITHUB_EVENT_NAME" = "release" ]; then
+              echo "tag '$tag' is not vA.B.C (A and B one digit, C one or two), refusing to guess"
+              exit 1
+            fi
+            echo "latest tag '$tag' is not vA.B.C: using the fallback in app/build.gradle.kts"
+            exit 0
+          fi
+
+          name="${tag#v}"
+          # 10# so that a two-digit patch written as 08 or 09 is read as decimal, not bad octal
+          major=$((10#$(printf '%s' "$name" | cut -d. -f1)))
+          minor=$((10#$(printf '%s' "$name" | cut -d. -f2)))
+          patch=$((10#$(printf '%s' "$name" | cut -d. -f3)))
+          code=$(( major * 1000 + minor * 100 + patch ))
+
+          # A build that is not the release itself sits somewhere after that tag, so it says so:
+          # 1.0.3+a1b2c3d. The build metadata is only in versionName; versionCode stays the tag's,
+          # because it is an ordering, not an identity, and giving a CI build a higher one would let
+          # it silently overwrite the release on a device.
+          if [ "$GITHUB_EVENT_NAME" != "release" ]; then
+            name="$name+$(git rev-parse --short HEAD)"
+          fi
+
+          echo "VERSION_ARGS=-Pmivolumeenhanced.versionName=$name -Pmivolumeenhanced.versionCode=$code" >> "$GITHUB_ENV"
+          echo "$tag gives versionName $name, versionCode $code"
+
+      - name: build
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        # unquoted on purpose: empty on a build without a usable tag, two -P flags otherwise
+        run: gradle assembleRelease --no-daemon $VERSION_ARGS
+
+      # Staged in one flat folder first. upload-artifact keeps the common parent of the paths it is
+      # given, so naming the APK by its build path would bury it under app/build/outputs/apk/release/
+      # inside the artifact.
+      - name: collect what ships
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/dist"
+          cp "$GITHUB_WORKSPACE"/app/build/outputs/apk/release/*.apk "$GITHUB_WORKSPACE/dist/"
+          ls -l "$GITHUB_WORKSPACE/dist"
+
+      # Short-lived, because a free account's artifact storage is billed in GB-hours: a CI build is
+      # for downloading right away, and a release keeps its files on the release page instead.
+      - uses: actions/upload-artifact@v4
+        id: upload
+        with:
+          name: mi-volume-enhanced
+          path: dist/           # a directory: its contents land at the root of the artifact
+          retention-days: 1
+
+      # On a release event this attaches to the release that was just published.
+      - name: attach to the release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+
+      # Only the newest build is worth keeping, so every other "mi-volume-enhanced" artifact in the
+      # repository is deleted once this one is safely uploaded. Deleting an artifact leaves its
+      # workflow run and logs in place. Without an id from the upload nothing is deleted, rather
+      # than everything.
+      - name: delete older artifacts
+        continue-on-error: true    # housekeeping; a failure here must not fail the build
+        env:
+          GH_TOKEN: ${{ github.token }}
+          KEEP: ${{ steps.upload.outputs.artifact-id }}
+        run: |
+          if [ -z "$KEEP" ]; then
+            echo "no artifact id from the upload; keeping every artifact"
+            exit 0
+          fi
+          gh api --paginate "repos/$GITHUB_REPOSITORY/actions/artifacts?name=mi-volume-enhanced&per_page=100" \
+            --jq ".artifacts[] | select(.id != $KEEP) | .id" |
+          while read -r id; do
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/actions/artifacts/$id" && echo "deleted artifact $id"
+          done

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Mi Volume Enhanced</string>
+
+    <string name="scope_systemui">System UI</string>
+    <string name="scope_bluetooth">Bluetooth extension</string>
+    <string name="scope_misound">MiSound</string>
+    <string name="status_loaded">Loaded</string>
+    <string name="status_not_loaded">Not loaded, enable this scope in LSPosed and restart it</string>
+    <string name="status_checking">Checking…</string>
+    <string name="action_restart">Restart scopes</string>
+    <string name="action_restart_summary">Applies module updates without restarting the device, requires root</string>
+    <string name="restart_no_root">Root access was not granted</string>
+    <string name="restart_done">Restarted: %1$s</string>
+    <string name="restart_not_running">Not running: %1$s</string>
+
+    <string name="chip_checking">Checking…</string>
+    <string name="chip_active">Active</string>
+    <string name="chip_inactive">Not loaded</string>
+    <string name="chip_partial">%1$d of %2$d loaded</string>
+    <plurals name="chip_problems">
+        <item quantity="one">%1$d problem</item>
+        <item quantity="other">%1$d problems</item>
+    </plurals>
+    <string name="sheet_title">Module status</string>
+    <string name="sheet_tap_to_copy">Tap a card to copy its report</string>
+    <string name="card_copy">Copy report</string>
+    <string name="snack_copied">Report copied</string>
+    <string name="field_status">Status</string>
+    <string name="field_report">Report</string>
+    <string name="field_version">Version</string>
+    <string name="field_pid">PID</string>
+    <string name="report_none">No report from this scope yet</string>
+
+    <string name="group_module">Module</string>
+    <string name="group_anc">Noise control</string>
+    <string name="group_app_volume">Per-app volume</string>
+    <string name="option_anc_row">Add noise control</string>
+    <string name="option_anc_row_summary">Adds a noise control row and a disconnect button to the volume panel while a compatible headset is connected</string>
+    <string name="option_cycle_off">Can switch to off</string>
+    <string name="option_cycle_off_on">Cycles through noise cancelling, transparency and off</string>
+    <string name="option_cycle_off_off">Switches between noise cancelling and transparency only</string>
+    <string name="option_island">Show the state in the island</string>
+    <string name="option_island_summary">Shows a HyperOS island when switching to noise cancelling or transparency</string>
+    <string name="option_app_volume">Per-app volume entry</string>
+    <string name="option_app_volume_summary">While an app plays audio, a button above the volume bar opens MiSound\'s per-app volume panel</string>
+
+    <string name="group_placement">When the volume panel is too tall</string>
+    <string name="placement_side">Beside the panel</string>
+    <string name="placement_side_summary">When there is not enough vertical space, a round button left of the panel, long press to disconnect; hidden when there is not enough room beside it either</string>
+    <string name="placement_hidden">Hidden</string>
+    <string name="placement_hidden_summary">No noise control when there is not enough vertical space</string>
+
+    <string name="option_hide_icon">Hide launcher icon</string>
+    <string name="option_hide_icon_summary">Open these settings from LSPosed afterwards</string>
+
+    <string name="state_ok">OK</string>
+    <string name="state_waiting">Waiting</string>
+    <string name="state_missing">Not applicable</string>
+    <string name="state_warning">Warning</string>
+    <string name="state_failed">Failed</string>
+
+    <string name="xposed_description">Noise control and per-app volume for the HyperOS volume panel</string>
+    <string-array name="xposed_scope" translatable="false">
+        <item>com.android.systemui</item>
+        <item>com.xiaomi.bluetooth</item>
+        <item>com.miui.misound</item>
+    </string-array>
+</resources>

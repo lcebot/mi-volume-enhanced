@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The app's own palette, used when the system offers no wallpaper palette, plus the error family,
+     which AppTheme always takes from here. A complete scheme rather than a few accents: components
+     pick their own roles, and a partial scheme shows Material's baseline wherever it stops.
+
+     Generated as a tonal spot scheme (the rule Android applies to a wallpaper colour) from the teal
+     seed #00796B, with the standard M3 tones: primary 40/100/90/10 in light. values-night carries
+     the dark half under the same names. ic_launcher_background is primary-40, so an unthemed
+     launcher icon and the app agree. -->
+<resources>
+    <color name="ic_launcher_background">#FF006B5E</color>
+
+    <!-- primary -->
+    <color name="brand_primary">#FF006B5E</color>
+    <color name="brand_on_primary">#FFFFFFFF</color>
+    <color name="brand_primary_container">#FF9FF2E2</color>
+    <color name="brand_on_primary_container">#FF00201B</color>
+    <color name="brand_inverse_primary">#FF83D5C6</color>
+
+    <!-- secondary -->
+    <color name="brand_secondary">#FF4A635E</color>
+    <color name="brand_on_secondary">#FFFFFFFF</color>
+    <color name="brand_secondary_container">#FFCDE8E1</color>
+    <color name="brand_on_secondary_container">#FF06201B</color>
+
+    <!-- tertiary -->
+    <color name="brand_tertiary">#FF446179</color>
+    <color name="brand_on_tertiary">#FFFFFFFF</color>
+    <color name="brand_tertiary_container">#FFCAE6FF</color>
+    <color name="brand_on_tertiary_container">#FF001E30</color>
+
+    <!-- error -->
+    <color name="brand_error">#FFBA1A1A</color>
+    <color name="brand_on_error">#FFFFFFFF</color>
+    <color name="brand_error_container">#FFFFDAD6</color>
+    <color name="brand_on_error_container">#FF410002</color>
+
+    <!-- surface -->
+    <color name="brand_surface">#FFF4FBF8</color>
+    <color name="brand_on_surface">#FF171D1B</color>
+    <color name="brand_surface_variant">#FFDAE5E1</color>
+    <color name="brand_on_surface_variant">#FF3F4946</color>
+    <color name="brand_surface_dim">#FFD5DBD9</color>
+    <color name="brand_surface_bright">#FFF4FBF8</color>
+    <color name="brand_surface_container_lowest">#FFFFFFFF</color>
+    <color name="brand_surface_container_low">#FFEFF5F2</color>
+    <color name="brand_surface_container">#FFE9EFEC</color>
+    <color name="brand_surface_container_high">#FFE3EAE7</color>
+    <color name="brand_surface_container_highest">#FFDDE4E1</color>
+
+    <!-- inverse -->
+    <color name="brand_inverse_surface">#FF2B3230</color>
+    <color name="brand_inverse_on_surface">#FFECF2EF</color>
+
+    <!-- outline -->
+    <color name="brand_outline">#FF6F7976</color>
+    <color name="brand_outline_variant">#FFBEC9C5</color>
+</resources>

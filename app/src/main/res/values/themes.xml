@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The window only. Every screen is Compose and takes its colours from AppTheme, so this theme
+         has two jobs: no action bar, and a window background in the app's own surface colour, so the
+         frame before the first composition matches the one after it in both appearances. -->
+    <style name="Theme.MiVolumeEnhanced" parent="android:Theme.DeviceDefault.DayNight">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@color/brand_surface</item>
+    </style>
+</resources>

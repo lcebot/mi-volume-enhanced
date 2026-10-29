@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- The scopes this app pings and notifies; without visibility the broadcasts can be dropped. -->
+    <queries>
+        <package android:name="com.android.systemui" />
+        <package android:name="com.xiaomi.bluetooth" />
+        <package android:name="com.miui.misound" />
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:description="@string/xposed_description"
+        android:enableOnBackInvokedCallback="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.MiVolumeEnhanced">
+
+        <meta-data
+            android:name="xposedmodule"
+            android:value="true" />
+        <meta-data
+            android:name="xposeddescription"
+            android:value="@string/xposed_description" />
+        <meta-data
+            android:name="xposedminversion"
+            android:value="102" />
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/xposed_scope" />
+
+        <!-- LSPosed opens this through MODULE_SETTINGS, so it stays reachable when the launcher
+             alias below is disabled to hide the icon. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
+            </intent-filter>
+        </activity>
+
+        <activity-alias
+            android:name=".Launcher"
+            android:enabled="true"
+            android:exported="true"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Read by the hooked processes, which cannot open this app's preferences. -->
+        <provider
+            android:name=".ConfigProvider"
+            android:authorities="io.github.lcebot.mivolumeenhanced.config"
+            android:exported="true" />
+
+        <!-- Scope reports that arrive while no screen is open, cached for the next one. -->
+        <receiver
+            android:name=".HookStatusReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="io.github.lcebot.mivolumeenhanced.action.HOOK_ALIVE" />
+                <action android:name="io.github.lcebot.mivolumeenhanced.action.PONG" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

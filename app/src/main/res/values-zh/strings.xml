@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="scope_systemui">系统界面</string>
+    <string name="scope_bluetooth">蓝牙扩展</string>
+    <string name="scope_misound">音质音效</string>
+    <string name="status_loaded">已加载</string>
+    <string name="status_not_loaded">未加载，请在 LSPosed 中启用此作用域并重启该作用域</string>
+    <string name="status_checking">检测中…</string>
+    <string name="action_restart">重启作用域</string>
+    <string name="action_restart_summary">无需重启设备即可使模块更新生效，需要 Root 权限</string>
+    <string name="restart_no_root">未获得 Root 权限</string>
+    <string name="restart_done">已重启：%1$s</string>
+    <string name="restart_not_running">未运行：%1$s</string>
+
+    <string name="chip_checking">检测中…</string>
+    <string name="chip_active">已激活</string>
+    <string name="chip_inactive">未加载</string>
+    <string name="chip_partial">已加载 %1$d/%2$d</string>
+    <plurals name="chip_problems">
+        <item quantity="other">%1$d 个问题</item>
+    </plurals>
+    <string name="sheet_title">模块状态</string>
+    <string name="sheet_tap_to_copy">轻触卡片以复制报告</string>
+    <string name="card_copy">复制报告</string>
+    <string name="snack_copied">报告已复制</string>
+    <string name="field_status">状态</string>
+    <string name="field_report">报告</string>
+    <string name="field_version">版本</string>
+    <string name="field_pid">PID</string>
+    <string name="report_none">此作用域暂无报告</string>
+
+    <string name="group_module">模块</string>
+    <string name="group_anc">降噪控制</string>
+    <string name="group_app_volume">多应用音量调节</string>
+    <string name="option_anc_row">添加降噪控制</string>
+    <string name="option_anc_row_summary">连接兼容的耳机时，在音量面板中添加降噪控制行与断开连接按钮</string>
+    <string name="option_cycle_off">可切换到关闭状态</string>
+    <string name="option_cycle_off_on">在降噪、通透与关闭之间循环切换</string>
+    <string name="option_cycle_off_off">仅在降噪与通透之间切换</string>
+    <string name="option_island">通过超级岛提示状态</string>
+    <string name="option_island_summary">切换至降噪或通透模式时显示超级岛提示</string>
+    <string name="option_app_volume">分应用音量入口</string>
+    <string name="option_app_volume_summary">有应用播放音频时，在音量条上方显示按钮，用于打开音质音效的分应用音量面板</string>
+
+    <string name="group_placement">音量面板过长时</string>
+    <string name="placement_side">置于面板侧边</string>
+    <string name="placement_side_summary">纵向空间不足时，改为面板左侧的圆形按钮，长按可断开连接；侧边空间仍不足时隐藏</string>
+    <string name="placement_hidden">隐藏</string>
+    <string name="placement_hidden_summary">纵向空间不足时不显示降噪控制</string>
+
+    <string name="option_hide_icon">隐藏桌面图标</string>
+    <string name="option_hide_icon_summary">隐藏后可在 LSPosed 的模块设置中打开本页面</string>
+
+    <string name="state_ok">正常</string>
+    <string name="state_waiting">等待中</string>
+    <string name="state_missing">不适用</string>
+    <string name="state_warning">警告</string>
+    <string name="state_failed">失败</string>
+
+    <string name="xposed_description">为 HyperOS 音量面板加入降噪控制与分应用音量</string>
+</resources>

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SystemUI loads the island icons from this package by name, so nothing in the app references them. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/mode_noise_cancelling,@drawable/mode_transparency" />

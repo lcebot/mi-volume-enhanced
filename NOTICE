@@ -1,0 +1,12 @@
+Mi Volume Enhanced
+Copyright 2026 lcebot
+
+This project is a rewrite of HyperVolumeANC (https://github.com/zhhhyyyyyy/HyperVolumeANC),
+Copyright 2026 zhhhyyyyyy, licensed under the Apache License 2.0. The volume panel hooks,
+the headset control logic and the MiSound panel hooks are derived from that project and were
+rewritten and changed here.
+
+The listening mode icons are drawn after the AirPods glyphs used by LibrePods
+(https://github.com/kavishdevar/librepods).
+
+Launcher and interface icons are Material Icons and Material Symbols by Google, Apache License 2.0.

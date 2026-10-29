@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The dark half of the palette in values/colors.xml: same seed and names, with the tones M3 uses
+     for dark (primary 80/20/30/90, a surface ramp rising from near-black). The launcher background
+     is not redefined; an icon has one appearance. -->
+<resources>
+    <!-- primary -->
+    <color name="brand_primary">#FF83D5C6</color>
+    <color name="brand_on_primary">#FF003730</color>
+    <color name="brand_primary_container">#FF005047</color>
+    <color name="brand_on_primary_container">#FF9FF2E2</color>
+    <color name="brand_inverse_primary">#FF006B5E</color>
+
+    <!-- secondary -->
+    <color name="brand_secondary">#FFB1CCC5</color>
+    <color name="brand_on_secondary">#FF1C3530</color>
+    <color name="brand_secondary_container">#FF334B46</color>
+    <color name="brand_on_secondary_container">#FFCDE8E1</color>
+
+    <!-- tertiary -->
+    <color name="brand_tertiary">#FFACCAE5</color>
+    <color name="brand_on_tertiary">#FF133348</color>
+    <color name="brand_tertiary_container">#FF2C4A60</color>
+    <color name="brand_on_tertiary_container">#FFCAE6FF</color>
+
+    <!-- error -->
+    <color name="brand_error">#FFFFB4AB</color>
+    <color name="brand_on_error">#FF690005</color>
+    <color name="brand_error_container">#FF93000A</color>
+    <color name="brand_on_error_container">#FFFFDAD6</color>
+
+    <!-- surface -->
+    <color name="brand_surface">#FF0E1513</color>
+    <color name="brand_on_surface">#FFDDE4E1</color>
+    <color name="brand_surface_variant">#FF3F4946</color>
+    <color name="brand_on_surface_variant">#FFBEC9C5</color>
+    <color name="brand_surface_dim">#FF0E1513</color>
+    <color name="brand_surface_bright">#FF343B39</color>
+    <color name="brand_surface_container_lowest">#FF090F0E</color>
+    <color name="brand_surface_container_low">#FF171D1B</color>
+    <color name="brand_surface_container">#FF1B211F</color>
+    <color name="brand_surface_container_high">#FF252B2A</color>
+    <color name="brand_surface_container_highest">#FF303634</color>
+
+    <!-- inverse -->
+    <color name="brand_inverse_surface">#FFDDE4E1</color>
+    <color name="brand_inverse_on_surface">#FF2B3230</color>
+
+    <!-- outline -->
+    <color name="brand_outline">#FF899390</color>
+    <color name="brand_outline_variant">#FF3F4946</color>
+</resources>

@@ -1,0 +1,16 @@
+keystore.properties
+*.jks
+*.p12
+*.pfx
+*.keystore
+.gradle/
+.kotlin/
+build/
+app/build/
+local.properties
+.idea/
+*.iml
+# The target APKs and their decompiled sources: reference material for development, and not ours
+# to redistribute.
+/refs/
+DEVNOTES.md
